@@ -1,0 +1,6 @@
+.container {
+  display: grid;
+  grid-template-areas: "users whiteboard chat";
+  grid-template-columns: 300px 1fr 300px;
+  min-height: 100vh;
+}
