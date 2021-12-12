@@ -1,4 +1,9 @@
 .container {
-  background-color: blueviolet;
   grid-area: whiteboard;
+  background-color: blueviolet;
+}
+
+.container canvas {
+  background-color: white;
+  cursor: crosshair;
 }
