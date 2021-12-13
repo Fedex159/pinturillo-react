@@ -9,7 +9,7 @@ const socket = io("http://localhost:3001/");
 function Home() {
   return (
     <div className={s.container}>
-      <Users />
+      <Users socket={socket} />
       <Whiteboard socket={socket} />
       <Chat />
     </div>
