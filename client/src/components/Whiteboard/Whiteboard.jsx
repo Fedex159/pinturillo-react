@@ -1,7 +1,26 @@
 import React, { useRef, useState, useEffect } from "react";
 import s from "./Whiteboard.module.css";
 
-function Whiteboard() {
+function scaleCanvas(coordinates, userWidth, userHeight, ref) {
+  let newCoordinates = {};
+
+  const xPorcentage = (ref.current.width * 100) / userWidth;
+  const yPorcentage = (ref.current.height * 100) / userHeight;
+
+  newCoordinates.mouseX =
+    xPorcentage < 100
+      ? Math.ceil((coordinates.mouseX * xPorcentage) / 100)
+      : coordinates.mouseX;
+
+  newCoordinates.mouseY =
+    yPorcentage < 100
+      ? Math.ceil((coordinates.mouseY * yPorcentage) / 100)
+      : coordinates.mouseY;
+
+  return newCoordinates;
+}
+
+function Whiteboard({ socket }) {
   const [isDrawing, setIsDrawing] = useState(false);
   const [context, setContext] = useState(null);
   const [boundings, setBoundings] = useState(null);
@@ -10,6 +29,32 @@ function Whiteboard() {
     mouseY: 0,
   });
   const ref = useRef(null);
+  const [userDrawing, setUserDrawing] = useState(false);
+
+  useEffect(() => {
+    socket.on("startDrawing", (coordinates, width, height) => {
+      if (context && !userDrawing) {
+        // console.log("entro startDrawing");
+        const { mouseX, mouseY } = scaleCanvas(coordinates, width, height, ref);
+        context.beginPath();
+        context.moveTo(mouseX, mouseY);
+        setUserDrawing(true);
+      }
+    });
+
+    socket.on("drawing", (coordinates, width, height) => {
+      // console.log("entro drawing");
+      if (context && userDrawing) {
+        const { mouseX, mouseY } = scaleCanvas(coordinates, width, height, ref);
+        context.lineTo(mouseX, mouseY);
+        context.stroke();
+      }
+    });
+
+    socket.on("notDrawing", () => {
+      setUserDrawing(false);
+    });
+  }, [context, userDrawing, socket]);
 
   useEffect(() => {
     if (ref.current) {
@@ -42,6 +87,12 @@ function Whiteboard() {
     setIsDrawing(true);
 
     // Start Drawing
+    socket.emit(
+      "startDrawing",
+      mouseCoordinates,
+      ref.current.width,
+      ref.current.height
+    );
     context.beginPath();
     context.moveTo(mouseCoordinates.mouseX, mouseCoordinates.mouseY);
   };
@@ -50,12 +101,19 @@ function Whiteboard() {
     handleCoordinate(event);
 
     if (isDrawing) {
+      socket.emit(
+        "drawing",
+        mouseCoordinates,
+        ref.current.width,
+        ref.current.height
+      );
       context.lineTo(mouseCoordinates.mouseX, mouseCoordinates.mouseY);
       context.stroke();
     }
   };
 
   const handleUp = (event) => {
+    socket.emit("notDrawing");
     handleCoordinate(event);
     setIsDrawing(false);
   };
