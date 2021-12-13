@@ -6,4 +6,6 @@
 .container canvas {
   background-color: white;
   cursor: crosshair;
+  width: 100%;
+  height: 100%;
 }

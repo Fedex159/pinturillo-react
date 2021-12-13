@@ -15,6 +15,8 @@ function Whiteboard() {
     if (ref.current) {
       setContext(ref.current.getContext("2d"));
       setBoundings(ref.current.getBoundingClientRect());
+      ref.current.width = ref.current.offsetWidth;
+      ref.current.height = ref.current.offsetHeight;
     }
   }, [ref]);
 
@@ -65,8 +67,6 @@ function Whiteboard() {
         onMouseDown={handleDown}
         onMouseMove={handleMove}
         onMouseUp={handleUp}
-        width="500"
-        height="500"
       ></canvas>
     </div>
   );
