@@ -1,4 +1,35 @@
 .container {
-  background-color: red;
+  display: flex;
+  flex-direction: column;
+  padding: 10px;
+  background-color: rgb(255, 217, 0);
   grid-area: chat;
+}
+
+.container form {
+  margin-top: auto;
+}
+
+.container input {
+  width: 100%;
+  padding: 0;
+}
+
+.container ul {
+  padding: 0;
+}
+
+.container li {
+  list-style: none;
+  text-align: start;
+}
+
+.myMessage {
+  color: blue;
+  font-weight: bold;
+}
+
+.userMessage {
+  color: green;
+  font-weight: bold;
 }

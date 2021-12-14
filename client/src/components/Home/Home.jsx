@@ -11,7 +11,7 @@ function Home() {
     <div className={s.container}>
       <Users socket={socket} />
       <Whiteboard socket={socket} />
-      <Chat />
+      <Chat socket={socket} />
     </div>
   );
 }
