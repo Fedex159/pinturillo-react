@@ -35,6 +35,12 @@ function userDisconnected(socket) {
   });
 }
 
+function chatMessages(socket) {
+  socket.on("message send", (id, text) => {
+    socket.broadcast.emit("message incoming", id, text);
+  });
+}
+
 function socket(server) {
   const socketIO = io(server, {
     cors: {
@@ -50,6 +56,9 @@ function socket(server) {
 
     // drawing
     drawing(socket);
+
+    // chat
+    chatMessages(socket);
 
     // user disconnect
     userDisconnected(socket);
