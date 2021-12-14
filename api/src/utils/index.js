@@ -1,4 +1,39 @@
 const io = require("socket.io");
+const mongoose = require("mongoose");
+
+function drawing(socket) {
+  socket.on("startDrawing", (coordinates, userWidth, userHeight) => {
+    socket.broadcast.emit("startDrawing", coordinates, userWidth, userHeight);
+  });
+
+  socket.on("drawing", (coordinates, userWidth, userHeight) => {
+    socket.broadcast.emit("drawing", coordinates, userWidth, userHeight);
+  });
+
+  socket.on("notDrawing", () => {
+    socket.broadcast.emit("notDrawing");
+  });
+}
+
+function userConnected(socket) {
+  console.log("User connected: ", socket.id);
+  mongoose.connection.db
+    .collection("rooms")
+    .findOneAndUpdate({}, { $push: { users: socket.id } });
+
+  socket.broadcast.emit("user connected", socket.id);
+}
+
+function userDisconnected(socket) {
+  socket.on("disconnect", () => {
+    console.log("User disconnect: ", socket.id);
+    mongoose.connection.db
+      .collection("rooms")
+      .findOneAndUpdate({}, { $pull: { users: socket.id } });
+
+    socket.broadcast.emit("user disconnected", socket.id);
+  });
+}
 
 function socket(server) {
   const socketIO = io(server, {
@@ -10,23 +45,14 @@ function socket(server) {
   });
 
   socketIO.on("connection", (socket) => {
-    console.log("User connected: ", socket.id);
+    // user connect
+    userConnected(socket);
 
-    socket.on("startDrawing", (coordinates, userWidth, userHeight) => {
-      socket.broadcast.emit("startDrawing", coordinates, userWidth, userHeight);
-    });
+    // drawing
+    drawing(socket);
 
-    socket.on("drawing", (coordinates, userWidth, userHeight) => {
-      socket.broadcast.emit("drawing", coordinates, userWidth, userHeight);
-    });
-
-    socket.on("notDrawing", () => {
-      socket.broadcast.emit("notDrawing");
-    });
-
-    socket.on("disconnect", () => {
-      console.log("User disconnect: ", socket.id);
-    });
+    // user disconnect
+    userDisconnected(socket);
   });
 }
 
