@@ -118,6 +118,15 @@ function Whiteboard({ socket }) {
     setIsDrawing(false);
   };
 
+  const handleClick = (event) => {
+    handleCoordinate(event);
+
+    context.beginPath();
+    context.moveTo(mouseCoordinates.mouseX, mouseCoordinates.mouseY);
+    context.lineTo(mouseCoordinates.mouseX + 1, mouseCoordinates.mouseY + 1);
+    context.stroke();
+  };
+
   return (
     <div className={s.container}>
       <canvas
@@ -125,6 +134,7 @@ function Whiteboard({ socket }) {
         onMouseDown={handleDown}
         onMouseMove={handleMove}
         onMouseUp={handleUp}
+        onClick={handleClick}
       ></canvas>
     </div>
   );
