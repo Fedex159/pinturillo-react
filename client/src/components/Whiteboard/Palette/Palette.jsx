@@ -22,48 +22,60 @@ const colors = [
   "#000000",
 ];
 
-const sizes = [10, 20, 30];
+const brushSizes = [10, 20, 30];
 
-function NewPage() {
+function NewPage({ clearPage }) {
   return (
-    <div className={s.newPage}>
+    <div className={s.newPage} onClick={() => clearPage()}>
       <img src={newPage} alt="newPage-icon" />
     </div>
   );
 }
 
-function Colors() {
+function Colors({ changeColor }) {
+  const handleClick = (event) => {
+    changeColor(event.target.id);
+  };
+
   return (
     <div className={s.colors}>
       {colors.map((c, i) => (
         <div
+          id={c}
           key={`${c}_${i}`}
           className={s.color}
           style={{ backgroundColor: c }}
+          onClick={handleClick}
         ></div>
       ))}
     </div>
   );
 }
 
-function Circles({ size }) {
+function Brush({ size, changeBrush }) {
   return (
-    <div className={s.circleContainer}>
+    <div className={s.brush} onClick={() => changeBrush(size)}>
       <div className={s.circle} style={{ width: size, height: size }}></div>
     </div>
   );
 }
 
-function Palette() {
+function Brushes({ changeBrush }) {
+  return (
+    <div className={s.brushes}>
+      {brushSizes.map((s, i) => (
+        <Brush key={`${i}_CircleSize`} size={s} changeBrush={changeBrush} />
+      ))}
+    </div>
+  );
+}
+
+function Palette({ clearPage, changeColor, changeBrush }) {
   return (
     <div className={s.container}>
-      <NewPage />
-      <Colors />
-      <div className={s.sizes}>
-        {sizes.map((s, i) => (
-          <Circles key={`${i}_CircleSize`} size={s} />
-        ))}
-      </div>
+      <NewPage clearPage={clearPage} />
+      <Colors changeColor={changeColor} />
+      <Brushes changeBrush={changeBrush} />
     </div>
   );
 }
