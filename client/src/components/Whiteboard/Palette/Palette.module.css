@@ -1,0 +1,69 @@
+/* newPage icon */
+.newPage {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 60px;
+  height: 60px;
+  background-color: #eeedb5;
+  /* background-color: #cacb54; */
+  border: 1px solid black;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.newPage img {
+  width: 40px;
+}
+
+/* Colors  */
+.colors {
+  display: flex;
+  flex-wrap: wrap;
+  align-content: flex-start;
+  max-width: 240px;
+}
+
+.color {
+  cursor: pointer;
+  width: 30px;
+  height: 30px;
+}
+
+/* Circles */
+
+.circleContainer {
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 60px;
+  height: 60px;
+  background-color: #eeedb5;
+  /* background-color: #cacb54; */
+  border: 1px solid black;
+  border-radius: 10px;
+}
+
+.circle {
+  display: list-item;
+  color: transparent;
+  border-radius: 50%;
+  background-color: black;
+}
+
+/* Palette */
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+  height: 10%;
+  /* background-color: #eeedb5; */
+  background-color: #cacb54;
+}
+
+.sizes {
+  display: flex;
+  gap: 5px;
+}
