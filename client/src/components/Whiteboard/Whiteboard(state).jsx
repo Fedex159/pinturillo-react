@@ -2,10 +2,6 @@ import React, { useRef, useState, useEffect } from "react";
 import Palette from "./Palette/Palette";
 import s from "./Whiteboard.module.css";
 
-let mouseCoordinates = { mouseX: 0, mouseY: 0 };
-let userDrawing = false;
-let userStartCoords = { mouseX: 0, mouseY: 0 };
-
 function scaleCanvas(coordinates, userWidth, userHeight, ref) {
   let newCoordinates = {};
 
@@ -29,32 +25,49 @@ function Whiteboard({ socket }) {
   const [isDrawing, setIsDrawing] = useState(false);
   const [context, setContext] = useState(null);
   const [boundings, setBoundings] = useState(null);
+  const [mouseCoordinates, setMouseCoordinates] = useState({
+    mouseX: 0,
+    mouseY: 0,
+  });
   const ref = useRef(null);
+  const [userDrawing, setUserDrawing] = useState(false);
+  // eslint-disable-next-line
+  const [userStartCoords, setUserStartCoords] = useState({
+    mouseX: 0,
+    mouseY: 0,
+  });
 
   useEffect(() => {
     socket.on("startDrawing", (coordinates, width, height) => {
       if (context && !userDrawing) {
         // console.log("entro startDrawing");
-        userStartCoords = scaleCanvas(coordinates, width, height, ref);
-        userDrawing = true;
+        setUserStartCoords(scaleCanvas(coordinates, width, height, ref));
+        setUserDrawing(true);
       }
     });
 
     socket.on("drawing", (coordinates, width, height) => {
       // console.log("entro drawing");
       if (context && userDrawing) {
-        const { mouseX, mouseY } = scaleCanvas(coordinates, width, height, ref);
-        context.beginPath();
-        context.moveTo(userStartCoords.mouseX, userStartCoords.mouseY);
-        context.lineTo(mouseX, mouseY);
-        context.closePath();
-        context.stroke();
-        userStartCoords = { mouseX, mouseY };
+        setUserStartCoords((prev) => {
+          const { mouseX, mouseY } = scaleCanvas(
+            coordinates,
+            width,
+            height,
+            ref
+          );
+          context.beginPath();
+          context.moveTo(prev.mouseX, prev.mouseY);
+          context.lineTo(mouseX, mouseY);
+          context.closePath();
+          context.stroke();
+          return { mouseX, mouseY };
+        });
       }
     });
 
     socket.on("notDrawing", () => {
-      userDrawing = false;
+      setUserDrawing(false);
     });
 
     socket.on("draw dot", (coordinates, width, height) => {
@@ -84,7 +97,7 @@ function Whiteboard({ socket }) {
         context.lineWidth = size;
       }
     });
-  }, [context, socket]);
+  }, [context, userDrawing, socket]);
 
   useEffect(() => {
     if (ref.current) {
@@ -106,9 +119,11 @@ function Whiteboard({ socket }) {
 
   const handleCoordinate = (event) => {
     if (boundings) {
-      let mouseX = event.clientX - boundings.left;
-      let mouseY = event.clientY - boundings.top;
-      mouseCoordinates = { mouseX, mouseY };
+      setMouseCoordinates(() => {
+        let mouseX = event.clientX - boundings.left;
+        let mouseY = event.clientY - boundings.top;
+        return { mouseX, mouseY };
+      });
     }
   };
 
@@ -139,11 +154,14 @@ function Whiteboard({ socket }) {
         ref.current.height
       );
 
-      context.beginPath();
-      context.moveTo(currentX, currentY);
-      context.lineTo(mouseCoordinates.mouseX, mouseCoordinates.mouseY);
-      context.closePath();
-      context.stroke();
+      setMouseCoordinates((prev) => {
+        context.beginPath();
+        context.moveTo(currentX, currentY);
+        context.lineTo(prev.mouseX, prev.mouseY);
+        context.closePath();
+        context.stroke();
+        return prev;
+      });
     }
   };
 
@@ -156,16 +174,15 @@ function Whiteboard({ socket }) {
   const handleClick = (event) => {
     handleCoordinate(event);
 
-    socket.emit(
-      "draw dot",
-      mouseCoordinates,
-      ref.current.width,
-      ref.current.height
-    );
-    context.beginPath();
-    context.moveTo(mouseCoordinates.mouseX, mouseCoordinates.mouseY);
-    context.lineTo(mouseCoordinates.mouseX, mouseCoordinates.mouseY);
-    context.stroke();
+    setMouseCoordinates((prev) => {
+      socket.emit("draw dot", prev, ref.current.width, ref.current.height);
+      context.beginPath();
+      context.moveTo(prev.mouseX, prev.mouseY);
+      context.lineTo(prev.mouseX, prev.mouseY);
+      context.stroke();
+
+      return prev;
+    });
   };
 
   const clearPage = () => {
