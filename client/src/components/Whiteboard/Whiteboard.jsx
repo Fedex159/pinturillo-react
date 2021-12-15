@@ -69,12 +69,12 @@ function Whiteboard({ socket }) {
     }
   }, [ref]);
 
-  useEffect(() => {
-    if (context) {
-      context.strokeStyle = "black";
-      context.lineWidth = 1;
-    }
-  }, [context]);
+  // useEffect(() => {
+  //   if (context) {
+  //     // context.strokeStyle = "#21751f";
+  //     context.lineWidth = 10;
+  //   }
+  // }, [context]);
 
   const handleCoordinate = (event) => {
     if (boundings) {
@@ -122,24 +122,46 @@ function Whiteboard({ socket }) {
     setIsDrawing(false);
   };
 
-  const handleClick = (event) => {
-    handleCoordinate(event);
+  // const handleClick = (event) => {
+  //   handleCoordinate(event);
 
-    context.beginPath();
-    context.moveTo(mouseCoordinates.mouseX, mouseCoordinates.mouseY);
-    context.lineTo(mouseCoordinates.mouseX + 1, mouseCoordinates.mouseY + 1);
-    context.stroke();
+  //   context.beginPath();
+  //   context.moveTo(mouseCoordinates.mouseX, mouseCoordinates.mouseY);
+  //   context.lineTo(mouseCoordinates.mouseX + 1, mouseCoordinates.mouseY + 1);
+  //   context.stroke();
+  // };
+
+  const clearPage = () => {
+    if (ref.current) {
+      context.clearRect(0, 0, ref.current.width, ref.current.height);
+    }
+  };
+
+  const changeColor = (color) => {
+    if (context) {
+      context.strokeStyle = color;
+    }
+  };
+
+  const changeBrush = (size) => {
+    if (context) {
+      context.lineWidth = size;
+    }
   };
 
   return (
     <div className={s.container}>
-      <Palette />
+      <Palette
+        clearPage={clearPage}
+        changeColor={changeColor}
+        changeBrush={changeBrush}
+      />
       <canvas
         ref={ref}
         onMouseDown={handleDown}
         onMouseMove={handleMove}
         onMouseUp={handleUp}
-        onClick={handleClick}
+        // onClick={handleClick}
       ></canvas>
     </div>
   );
