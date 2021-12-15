@@ -13,6 +13,22 @@ function drawing(socket) {
   socket.on("notDrawing", () => {
     socket.broadcast.emit("notDrawing");
   });
+
+  socket.on("draw dot", (coordinates, width, height) => {
+    socket.broadcast.emit("draw dot", coordinates, width, height);
+  });
+
+  socket.on("clear page", () => {
+    socket.broadcast.emit("clear page");
+  });
+
+  socket.on("brush color", (color) => {
+    socket.broadcast.emit("brush color", color);
+  });
+
+  socket.on("brush size", (size) => {
+    socket.broadcast.emit("brush size", size);
+  });
 }
 
 function userConnected(socket) {
