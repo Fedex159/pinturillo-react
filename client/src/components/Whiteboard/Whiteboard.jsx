@@ -31,14 +31,17 @@ function Whiteboard({ socket }) {
   });
   const ref = useRef(null);
   const [userDrawing, setUserDrawing] = useState(false);
+  // eslint-disable-next-line
+  const [userStartCoords, setUserStartCoords] = useState({
+    mouseX: 0,
+    mouseY: 0,
+  });
 
   useEffect(() => {
     socket.on("startDrawing", (coordinates, width, height) => {
       if (context && !userDrawing) {
         // console.log("entro startDrawing");
-        const { mouseX, mouseY } = scaleCanvas(coordinates, width, height, ref);
-        context.beginPath();
-        context.moveTo(mouseX, mouseY);
+        setUserStartCoords(scaleCanvas(coordinates, width, height, ref));
         setUserDrawing(true);
       }
     });
@@ -46,29 +49,71 @@ function Whiteboard({ socket }) {
     socket.on("drawing", (coordinates, width, height) => {
       // console.log("entro drawing");
       if (context && userDrawing) {
-        const { mouseX, mouseY } = scaleCanvas(coordinates, width, height, ref);
-        context.lineTo(mouseX, mouseY);
-        context.stroke();
+        setUserStartCoords((prev) => {
+          const { mouseX, mouseY } = scaleCanvas(
+            coordinates,
+            width,
+            height,
+            ref
+          );
+          context.beginPath();
+          context.moveTo(prev.mouseX, prev.mouseY);
+          context.lineTo(mouseX, mouseY);
+          context.closePath();
+          context.stroke();
+          return { mouseX, mouseY };
+        });
       }
     });
 
     socket.on("notDrawing", () => {
       setUserDrawing(false);
     });
+
+    socket.on("draw dot", (coordinates, width, height) => {
+      if (context) {
+        const { mouseX, mouseY } = scaleCanvas(coordinates, width, height, ref);
+        context.beginPath();
+        context.moveTo(mouseX, mouseY);
+        context.lineTo(mouseX, mouseY);
+        context.stroke();
+      }
+    });
+
+    socket.on("clear page", () => {
+      if (context) {
+        context.clearRect(0, 0, ref.current.width, ref.current.height);
+      }
+    });
+
+    socket.on("brush color", (color) => {
+      if (context) {
+        context.strokeStyle = color;
+      }
+    });
+
+    socket.on("brush size", (size) => {
+      if (context) {
+        context.lineWidth = size;
+      }
+    });
   }, [context, userDrawing, socket]);
 
   useEffect(() => {
     if (ref.current) {
       const bound = ref.current.getBoundingClientRect();
+      const ctx = ref.current.getContext("2d");
 
-      setContext(ref.current.getContext("2d"));
+      setContext(ctx);
       setBoundings(bound);
 
       ref.current.width = ref.current.offsetWidth;
       ref.current.height = ref.current.offsetHeight;
 
       // Initial brush
-      ref.current.getContext("2d").lineWidth = 10;
+      ctx.lineWidth = 10;
+      ctx.lineJoin = "round";
+      ctx.lineCap = "round";
     }
   }, [ref]);
 
@@ -93,11 +138,12 @@ function Whiteboard({ socket }) {
       ref.current.width,
       ref.current.height
     );
-    context.beginPath();
-    context.moveTo(mouseCoordinates.mouseX, mouseCoordinates.mouseY);
   };
 
   const handleMove = (event) => {
+    const currentX = mouseCoordinates.mouseX;
+    const currentY = mouseCoordinates.mouseY;
+
     handleCoordinate(event);
 
     if (isDrawing) {
@@ -107,8 +153,15 @@ function Whiteboard({ socket }) {
         ref.current.width,
         ref.current.height
       );
-      context.lineTo(mouseCoordinates.mouseX, mouseCoordinates.mouseY);
-      context.stroke();
+
+      setMouseCoordinates((prev) => {
+        context.beginPath();
+        context.moveTo(currentX, currentY);
+        context.lineTo(prev.mouseX, prev.mouseY);
+        context.closePath();
+        context.stroke();
+        return prev;
+      });
     }
   };
 
@@ -118,30 +171,38 @@ function Whiteboard({ socket }) {
     setIsDrawing(false);
   };
 
-  // const handleClick = (event) => {
-  //   handleCoordinate(event);
+  const handleClick = (event) => {
+    handleCoordinate(event);
 
-  //   context.beginPath();
-  //   context.moveTo(mouseCoordinates.mouseX, mouseCoordinates.mouseY);
-  //   context.lineTo(mouseCoordinates.mouseX + 1, mouseCoordinates.mouseY + 1);
-  //   context.stroke();
-  // };
+    setMouseCoordinates((prev) => {
+      socket.emit("draw dot", prev, ref.current.width, ref.current.height);
+      context.beginPath();
+      context.moveTo(prev.mouseX, prev.mouseY);
+      context.lineTo(prev.mouseX, prev.mouseY);
+      context.stroke();
+
+      return prev;
+    });
+  };
 
   const clearPage = () => {
     if (ref.current) {
       context.clearRect(0, 0, ref.current.width, ref.current.height);
+      socket.emit("clear page");
     }
   };
 
   const changeColor = (color) => {
     if (context) {
       context.strokeStyle = color;
+      socket.emit("brush color", color);
     }
   };
 
   const changeBrush = (size) => {
     if (context) {
       context.lineWidth = size;
+      socket.emit("brush size", size);
     }
   };
 
@@ -157,7 +218,7 @@ function Whiteboard({ socket }) {
         onMouseDown={handleDown}
         onMouseMove={handleMove}
         onMouseUp={handleUp}
-        // onClick={handleClick}
+        onClick={handleClick}
       ></canvas>
     </div>
   );
