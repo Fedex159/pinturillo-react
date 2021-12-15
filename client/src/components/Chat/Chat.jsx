@@ -26,10 +26,14 @@ function Chat({ socket }) {
       <ul>
         {messages.map((m) => (
           <li>
-            <span className={socket.id === m.id ? s.myMessage : s.userMessage}>
-              {m.id}:{" "}
-            </span>
-            {m.text}
+            <p>
+              <span
+                className={socket.id === m.id ? s.myMessage : s.userMessage}
+              >
+                {m.id}:{" "}
+              </span>
+              {m.text}
+            </p>
           </li>
         ))}
       </ul>

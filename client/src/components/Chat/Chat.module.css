@@ -17,11 +17,24 @@
 
 .container ul {
   padding: 0;
+  max-height: 90vh;
+  overflow-y: auto;
+  /* Firefox scroll */
+  scrollbar-width: none;
+}
+
+/* Chrome scroll */
+.container ul::-webkit-scrollbar {
+  display: none;
 }
 
 .container li {
   list-style: none;
   text-align: start;
+}
+
+.container p {
+  margin: 0;
 }
 
 .myMessage {
