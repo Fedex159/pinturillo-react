@@ -1,4 +1,5 @@
 import React, { useRef, useState, useEffect } from "react";
+import Palette from "./Palette/Palette";
 import s from "./Whiteboard.module.css";
 
 function scaleCanvas(coordinates, userWidth, userHeight, ref) {
@@ -58,8 +59,11 @@ function Whiteboard({ socket }) {
 
   useEffect(() => {
     if (ref.current) {
+      const bound = ref.current.getBoundingClientRect();
+
       setContext(ref.current.getContext("2d"));
-      setBoundings(ref.current.getBoundingClientRect());
+      setBoundings(bound);
+
       ref.current.width = ref.current.offsetWidth;
       ref.current.height = ref.current.offsetHeight;
     }
@@ -129,6 +133,7 @@ function Whiteboard({ socket }) {
 
   return (
     <div className={s.container}>
+      <Palette />
       <canvas
         ref={ref}
         onMouseDown={handleDown}
