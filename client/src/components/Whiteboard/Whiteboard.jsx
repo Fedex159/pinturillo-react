@@ -66,15 +66,11 @@ function Whiteboard({ socket }) {
 
       ref.current.width = ref.current.offsetWidth;
       ref.current.height = ref.current.offsetHeight;
+
+      // Initial brush
+      ref.current.getContext("2d").lineWidth = 10;
     }
   }, [ref]);
-
-  // useEffect(() => {
-  //   if (context) {
-  //     // context.strokeStyle = "#21751f";
-  //     context.lineWidth = 10;
-  //   }
-  // }, [context]);
 
   const handleCoordinate = (event) => {
     if (boundings) {
