@@ -4,3 +4,13 @@
   grid-template-columns: 300px 1fr 300px;
   min-height: 100vh;
 }
+
+@media screen and (max-width: 1400px) {
+  .container {
+    grid-template-areas:
+      "whiteboard whiteboard"
+      "users chat";
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 8fr 4fr;
+  }
+}
