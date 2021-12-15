@@ -28,7 +28,7 @@ function Users({ socket }) {
     <div className={s.container}>
       Users
       {users.map((user) => (
-        <h2>{user}</h2>
+        <h2 key={user}>{user}</h2>
       ))}
     </div>
   );
