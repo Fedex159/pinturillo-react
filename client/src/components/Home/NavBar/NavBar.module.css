@@ -9,3 +9,7 @@
   height: 100px;
   background-color: #f2bb23;
 }
+
+.container div:hover {
+  cursor: pointer;
+}
