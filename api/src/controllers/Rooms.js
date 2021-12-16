@@ -1,13 +1,12 @@
 const mongoose = require("mongoose");
 const ObjectId = require("mongodb").ObjectId;
+const { Room } = require("../models/Room");
 
 async function getRoomById(req, res, next) {
   try {
     const { id } = req.params;
 
-    const result = await mongoose.connection.db
-      .collection("rooms")
-      .findOne({ _id: new ObjectId(id) });
+    const result = await Room.findOne({ _id: new ObjectId(id) });
 
     res.json(result);
   } catch (e) {
@@ -19,11 +18,9 @@ async function createRoom(req, res, next) {
   try {
     const { title, password } = req.body;
     if (title && password) {
-      const response = await mongoose.connection.db
-        .collection("rooms")
-        .insertOne({ title, password, users: [] });
+      const response = await Room.create({ title, password, users: [] });
 
-      res.json({ message: response.insertedId });
+      res.json({ message: response._id });
       return;
     }
     res.status(400).json({ message: "Title or password missed" });

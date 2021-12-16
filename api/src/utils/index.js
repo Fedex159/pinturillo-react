@@ -1,5 +1,7 @@
 const io = require("socket.io");
 const mongoose = require("mongoose");
+const ObjectId = require("mongodb").ObjectId;
+const { Room } = require("../models/Room");
 
 function drawing(socket) {
   socket.on("startDrawing", (coordinates, userWidth, userHeight) => {
@@ -32,12 +34,15 @@ function drawing(socket) {
 }
 
 function userConnected(socket) {
-  console.log("User connected: ", socket.id);
-  mongoose.connection.db
-    .collection("rooms")
-    .findOneAndUpdate({}, { $push: { users: socket.id } });
-
-  socket.broadcast.emit("user connected", socket.id);
+  socket.on("room", (id) => {
+    Room.findOneAndUpdate(
+      { _id: new ObjectId(id) },
+      { $push: { users: socket.id } },
+      { new: true }
+    )
+      .then((data) => socket.emit("user connected", data.users))
+      .catch((err) => console.log(err));
+  });
 }
 
 function userDisconnected(socket) {
@@ -68,6 +73,7 @@ function socket(server) {
 
   socketIO.on("connection", (socket) => {
     // user connect
+    console.log("User connected: ", socket.id);
     userConnected(socket);
 
     // drawing
