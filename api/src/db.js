@@ -9,7 +9,6 @@ mongoose.connect("mongodb://localhost:27017/pinturillo", {
 const connection = mongoose.connection;
 
 function db() {
-  Room(mongoose);
   connection.once("open", () => {
     console.log("Connection to DB!!!");
   });
