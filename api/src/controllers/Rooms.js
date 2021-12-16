@@ -15,4 +15,21 @@ async function getRoomById(req, res, next) {
   }
 }
 
-module.exports = { getRoomById };
+async function createRoom(req, res, next) {
+  try {
+    const { title, password } = req.body;
+    if (title && password) {
+      const response = await mongoose.connection.db
+        .collection("rooms")
+        .insertOne({ title, password, users: [] });
+
+      res.json({ message: response.insertedId });
+      return;
+    }
+    res.status(400).json({ message: "Title or password missed" });
+  } catch (e) {
+    next(e);
+  }
+}
+
+module.exports = { getRoomById, createRoom };
