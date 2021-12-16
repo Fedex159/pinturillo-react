@@ -23,7 +23,7 @@ function Name() {
           Nick:
           <input name="name" placeholder="Name..." />
         </label>
-        <button type="submit">Play</button>
+        <button type="submit">Save</button>
       </form>
     </div>
   );
