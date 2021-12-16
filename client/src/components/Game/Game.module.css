@@ -11,6 +11,6 @@
       "whiteboard whiteboard"
       "users chat";
     grid-template-columns: 1fr 1fr;
-    grid-template-rows: 8fr 4fr;
+    grid-template-rows: 1fr 300px;
   }
 }

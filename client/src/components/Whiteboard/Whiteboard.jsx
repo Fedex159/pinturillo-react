@@ -101,6 +101,17 @@ function Whiteboard({ socket }) {
       ctx.lineWidth = 10;
       ctx.lineJoin = "round";
       ctx.lineCap = "round";
+
+      const resizeCanvas = () => {
+        const bound = ref.current.getBoundingClientRect();
+        ref.current.width = ref.current.offsetWidth;
+        ref.current.height = ref.current.offsetHeight;
+        ctx.lineWidth = 10;
+        ctx.lineJoin = "round";
+        ctx.lineCap = "round";
+        setBoundings(bound);
+      };
+      window.addEventListener("resize", resizeCanvas);
     }
   }, [ref]);
 
