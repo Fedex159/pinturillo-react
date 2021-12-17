@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 import s from "./Users.module.css";
 
 function Users({ socket, id }) {
   const [users, setUsers] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (socket) {
@@ -13,7 +15,13 @@ function Users({ socket, id }) {
         axios
           .get(`http://localhost:3001/rooms/${id}`)
           .then((response) => response.data)
-          .then((data) => setUsers(data.users));
+          .then((data) => {
+            if (data) {
+              setUsers(data.users);
+              return;
+            }
+            // navigate("/");
+          });
       });
 
       socket.on("user connected", (userId) => {
