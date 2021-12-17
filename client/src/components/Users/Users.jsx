@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 import s from "./Users.module.css";
 
 function Users({ socket, id }) {
   const [users, setUsers] = useState([]);
-  const navigate = useNavigate();
+  const [redirect, setRedirect] = useState(false);
 
   useEffect(() => {
     if (socket) {
@@ -20,7 +20,8 @@ function Users({ socket, id }) {
               setUsers(data.users);
               return;
             }
-            // navigate("/");
+            socket.disconnect();
+            setRedirect(true);
           });
       });
 
@@ -46,6 +47,7 @@ function Users({ socket, id }) {
       {users.map((user) => (
         <h2 key={user}>{user}</h2>
       ))}
+      {redirect ? <Navigate to="/" /> : null}
     </div>
   );
 }
