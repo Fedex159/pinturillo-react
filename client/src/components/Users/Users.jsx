@@ -2,27 +2,35 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import s from "./Users.module.css";
 
-function Users({ socket }) {
+function Users({ socket, id }) {
   const [users, setUsers] = useState([]);
 
   useEffect(() => {
-    socket.on("connect", () => {
-      axios
-        .get("http://localhost:3001/rooms/61b8e426d5c7eb84302b152e")
-        .then((response) => response.data)
-        .then((data) => setUsers(data.users));
-    });
-
-    socket.on("user connected", (id) => {
-      setUsers((prev) => [...prev, id]);
-    });
-
-    socket.on("user disconnected", (id) => {
-      setUsers((prev) => {
-        return prev.filter((u) => u !== id);
+    if (socket) {
+      socket.on("connect", () => {
+        socket.emit("room", id);
+        socket.emit("user connected", socket.id, id);
+        axios
+          .get(`http://localhost:3001/rooms/${id}`)
+          .then((response) => response.data)
+          .then((data) => setUsers(data.users));
       });
-    });
-  }, [socket]);
+
+      socket.on("user connected", (userId) => {
+        setUsers((prev) => [...prev, userId]);
+      });
+
+      socket.on("message", (data) => {
+        console.log(data);
+      });
+
+      socket.on("user disconnected", (id) => {
+        setUsers((prev) => {
+          return prev.filter((u) => u !== id);
+        });
+      });
+    }
+  }, [socket, id]);
 
   return (
     <div className={s.container}>
