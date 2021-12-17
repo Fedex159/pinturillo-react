@@ -79,7 +79,7 @@ function userDisconnected(socket) {
         .then((data) => {
           console.log("User removed from room");
           // room quedo vacia
-          if (!data.users.length) {
+          if (data && !data.users.length) {
             // Borramos la room de la db
             Room.deleteOne({ _id: data._id }).then(() =>
               console.log("Room delete from DB")
