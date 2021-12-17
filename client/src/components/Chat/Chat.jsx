@@ -1,21 +1,23 @@
 import React, { useState, useEffect } from "react";
 import s from "./Chat.module.css";
 
-function Chat({ socket }) {
+function Chat({ socket, id }) {
   const [messages, setMessages] = useState([]);
 
   useEffect(() => {
-    socket.on("message incoming", (id, text) => {
-      setMessages((prev) => [...prev, { id, text }]);
-    });
+    if (socket) {
+      socket.on("message incoming", (userId, text) => {
+        setMessages((prev) => [...prev, { userId, text }]);
+      });
+    }
   }, [socket]);
 
   const handleSubmit = (event) => {
     event.preventDefault();
     const value = event.target.message.value;
     if (value) {
-      socket.emit("message send", socket.id, value);
-      setMessages((prev) => [...prev, { id: socket.id, text: value }]);
+      socket.emit("message send", socket.id, value, id);
+      setMessages((prev) => [...prev, { userId: socket.id, text: value }]);
       event.target.reset();
     }
   };
@@ -24,13 +26,13 @@ function Chat({ socket }) {
     <div className={s.container}>
       Chat
       <ul>
-        {messages.map((m) => (
-          <li>
+        {messages.map((m, i) => (
+          <li key={`${m.userId}_${i}`}>
             <p>
               <span
-                className={socket.id === m.id ? s.myMessage : s.userMessage}
+                className={socket.id === m.userId ? s.myMessage : s.userMessage}
               >
-                {m.id}:{" "}
+                {m.userId}:{" "}
               </span>
               {m.text}
             </p>
