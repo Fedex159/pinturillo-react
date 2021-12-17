@@ -1,6 +1,15 @@
 const ObjectId = require("mongodb").ObjectId;
 const { Room } = require("../models/Room");
 
+async function getRooms(req, res, next) {
+  try {
+    const result = await Room.find({}, { password: false, __v: false });
+    res.json(result);
+  } catch (err) {
+    next(err);
+  }
+}
+
 async function getRoomById(req, res, next) {
   try {
     const { id } = req.params;
@@ -28,4 +37,4 @@ async function createRoom(req, res, next) {
   }
 }
 
-module.exports = { getRoomById, createRoom };
+module.exports = { getRooms, getRoomById, createRoom };
