@@ -1,36 +1,39 @@
 const io = require("socket.io");
-const mongoose = require("mongoose");
 const ObjectId = require("mongodb").ObjectId;
 const { Room } = require("../models/Room");
 const { User } = require("../models/User");
 
 function drawing(socket) {
-  socket.on("startDrawing", (coordinates, userWidth, userHeight) => {
-    socket.broadcast.emit("startDrawing", coordinates, userWidth, userHeight);
+  socket.on("startDrawing", (coordinates, userWidth, userHeight, room) => {
+    socket.broadcast
+      .to(room)
+      .emit("startDrawing", coordinates, userWidth, userHeight);
   });
 
-  socket.on("drawing", (coordinates, userWidth, userHeight) => {
-    socket.broadcast.emit("drawing", coordinates, userWidth, userHeight);
+  socket.on("drawing", (coordinates, userWidth, userHeight, room) => {
+    socket.broadcast
+      .to(room)
+      .emit("drawing", coordinates, userWidth, userHeight);
   });
 
-  socket.on("notDrawing", () => {
-    socket.broadcast.emit("notDrawing");
+  socket.on("notDrawing", (room) => {
+    socket.broadcast.to(room).emit("notDrawing");
   });
 
-  socket.on("draw dot", (coordinates, width, height) => {
-    socket.broadcast.emit("draw dot", coordinates, width, height);
+  socket.on("draw dot", (coordinates, width, height, room) => {
+    socket.broadcast.to(room).emit("draw dot", coordinates, width, height);
   });
 
-  socket.on("clear page", () => {
-    socket.broadcast.emit("clear page");
+  socket.on("clear page", (room) => {
+    socket.broadcast.to(room).emit("clear page");
   });
 
-  socket.on("brush color", (color) => {
-    socket.broadcast.emit("brush color", color);
+  socket.on("brush color", (color, room) => {
+    socket.broadcast.to(room).emit("brush color", color);
   });
 
-  socket.on("brush size", (size) => {
-    socket.broadcast.emit("brush size", size);
+  socket.on("brush size", (size, room) => {
+    socket.broadcast.to(room).emit("brush size", size);
   });
 }
 
@@ -55,7 +58,7 @@ function userConnected(socket) {
   });
 
   socket.on("user connected", (userId, room) => {
-    socket.to(room).emit("user connected", userId);
+    socket.broadcast.to(room).emit("user connected", userId);
   });
 }
 
@@ -65,6 +68,8 @@ function userDisconnected(socket) {
 
     // Busco el usuario
     User.findOne({ _id: socket.id }).then((user) => {
+      socket.broadcast.to(user.room).emit("user disconnected", socket.id);
+
       // Busco la room y lo remuevo de la sala
       Room.findOneAndUpdate(
         { _id: new ObjectId(user.room) },
@@ -89,14 +94,12 @@ function userDisconnected(socket) {
         })
         .catch((err) => console.log("Error: ", err));
     });
-
-    socket.broadcast.emit("user disconnected", socket.id);
   });
 }
 
 function chatMessages(socket) {
   socket.on("message send", (userId, text, room) => {
-    socket.to(room).emit("message incoming", userId, text);
+    socket.broadcast.to(room).emit("message incoming", userId, text);
   });
 }
 
