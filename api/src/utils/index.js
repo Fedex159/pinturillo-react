@@ -2,6 +2,7 @@ const io = require("socket.io");
 const mongoose = require("mongoose");
 const ObjectId = require("mongodb").ObjectId;
 const { Room } = require("../models/Room");
+const { User } = require("../models/User");
 
 function drawing(socket) {
   socket.on("startDrawing", (coordinates, userWidth, userHeight) => {
@@ -34,23 +35,60 @@ function drawing(socket) {
 }
 
 function userConnected(socket) {
+  console.log("User connected: ", socket.id);
+
   socket.on("room", (id) => {
+    User.create({ _id: socket.id, room: id })
+      .then(() => console.log("User added to DB"))
+      .catch((err) => console.log(err));
+
     Room.findOneAndUpdate(
       { _id: new ObjectId(id) },
       { $push: { users: socket.id } },
       { new: true }
     )
-      .then((data) => socket.emit("user connected", data.users))
+      .then(() => {
+        socket.join(id);
+        console.log("Join to room: ", id);
+      })
       .catch((err) => console.log(err));
+  });
+
+  socket.on("user connected", (userId, room) => {
+    socket.to(room).emit("user connected", userId);
   });
 }
 
 function userDisconnected(socket) {
   socket.on("disconnect", () => {
     console.log("User disconnect: ", socket.id);
-    mongoose.connection.db
-      .collection("rooms")
-      .findOneAndUpdate({}, { $pull: { users: socket.id } });
+
+    // Busco el usuario
+    User.findOne({ _id: socket.id }).then((user) => {
+      // Busco la room y lo remuevo de la sala
+      Room.findOneAndUpdate(
+        { _id: new ObjectId(user.room) },
+        { $pull: { users: user._id } },
+        { new: true }
+      )
+        .then((data) => {
+          console.log("User removed from room");
+          // room quedo vacia
+          if (!data.users.length) {
+            // Borramos la room de la db
+            Room.deleteOne({ _id: data._id }).then(() =>
+              console.log("Room delete from DB")
+            );
+          }
+        })
+        .then(() => {
+          // Borramos el user de la db
+          User.deleteOne({ _id: socket.id }).then(() =>
+            console.log("User remove from DB")
+          );
+        })
+        .catch((err) => console.log("Error: ", err));
+    });
 
     socket.broadcast.emit("user disconnected", socket.id);
   });
@@ -73,7 +111,6 @@ function socket(server) {
 
   socketIO.on("connection", (socket) => {
     // user connect
-    console.log("User connected: ", socket.id);
     userConnected(socket);
 
     // drawing
