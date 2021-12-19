@@ -37,4 +37,18 @@ async function createRoom(req, res, next) {
   }
 }
 
-module.exports = { getRooms, getRoomById, createRoom };
+async function verifyRoom(req, res, next) {
+  try {
+    const { id, password } = req.params;
+    const result = await Room.findOne({
+      _id: new ObjectId(id),
+      password: password,
+    });
+
+    res.send({ message: result ? true : false });
+  } catch (err) {
+    next(err);
+  }
+}
+
+module.exports = { getRooms, getRoomById, createRoom, verifyRoom };
