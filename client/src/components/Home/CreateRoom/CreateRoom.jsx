@@ -1,13 +1,15 @@
 import React, { useState } from "react";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { createRoom } from "../../../utils";
 import { useNavigate } from "react-router-dom";
 import FormContainer from "../FormContainer/FormContainer";
 import Message from "../Message/Message";
+import { setAccess } from "../../../state/actions";
 // import s from "./CreateRoom.module.css";
 
 function CreateRoom() {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const name = useSelector((state) => state.name);
   const [showMessage, setShowMessage] = useState(false);
 
@@ -19,6 +21,7 @@ function CreateRoom() {
     if (title && name) {
       createRoom({ title, password })
         .then((data) => {
+          dispatch(setAccess(true));
           navigate({ pathname: `/game/${data.message}` }, { replace: true });
         })
         .catch((err) => console.log(err));
