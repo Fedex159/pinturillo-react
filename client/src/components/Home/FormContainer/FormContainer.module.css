@@ -23,6 +23,11 @@
   border-radius: 10px;
 }
 
+.container input::placeholder {
+  color: white;
+  opacity: 0.5;
+}
+
 .container h2 {
   color: white;
   margin: 0 0 auto 0;
