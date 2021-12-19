@@ -1,6 +1,7 @@
 import React from "react";
 import { createRoom } from "../../../utils";
 import { useNavigate } from "react-router-dom";
+import FormContainer from "../FormContainer/FormContainer";
 import s from "./CreateRoom.module.css";
 
 function CreateRoom() {
@@ -22,18 +23,14 @@ function CreateRoom() {
   };
 
   return (
-    <div className={s.container}>
+    <FormContainer>
+      <h2>Create Room</h2>
       <form onSubmit={handleSubmit}>
         <input type="text" name="title" placeholder="Title*" required />
-        <input
-          type="password"
-          name="password"
-          placeholder="Password*"
-          required
-        />
+        <input type="password" name="password" placeholder="Password" />
         <button type="submit">Create</button>
       </form>
-    </div>
+    </FormContainer>
   );
 }
 
