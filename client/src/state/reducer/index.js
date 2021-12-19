@@ -2,6 +2,7 @@ import { types } from "../actions/types";
 
 const initialState = {
   name: "",
+  access: false,
 };
 
 const rootReducer = (state = initialState, action) => {
@@ -10,6 +11,13 @@ const rootReducer = (state = initialState, action) => {
       return {
         ...state,
         name: action.payload,
+      };
+    }
+
+    case types.SET_ACCESS: {
+      return {
+        ...state,
+        access: action.payload,
       };
     }
 

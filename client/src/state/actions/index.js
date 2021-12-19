@@ -6,3 +6,10 @@ export const setName = (name) => {
     payload: name,
   };
 };
+
+export const setAccess = (value) => {
+  return {
+    type: types.SET_ACCESS,
+    payload: value,
+  };
+};
