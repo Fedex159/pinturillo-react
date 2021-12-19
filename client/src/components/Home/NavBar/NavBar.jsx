@@ -2,9 +2,9 @@ import React from "react";
 import s from "./NavBar.module.css";
 
 const items = [
+  { id: "name", text: "Change Name" },
   { id: "create", text: "Create Room" },
   { id: "join", text: "Join Room" },
-  { id: "name", text: "Change Name" },
 ];
 
 function NavBar({ setOption }) {
