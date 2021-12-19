@@ -11,3 +11,8 @@ export const joinRoom = async (id, password) => {
   );
   return response.data;
 };
+
+export const getUsersRoom = async (id) => {
+  const response = await axios.get(`http://localhost:3001/rooms/users/${id}`);
+  return response.data;
+};
