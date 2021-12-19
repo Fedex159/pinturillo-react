@@ -1,0 +1,22 @@
+.text {
+  margin-top: auto;
+  margin-bottom: auto;
+  font-size: 1.4rem;
+  font-weight: bold;
+}
+
+.textError {
+  color: red;
+}
+
+.textSuccess {
+  color: greenyellow;
+}
+
+.show {
+  display: block;
+}
+
+.hide {
+  display: none;
+}
