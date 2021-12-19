@@ -68,31 +68,33 @@ function userDisconnected(socket) {
 
     // Busco el usuario
     User.findOne({ _id: socket.id }).then((user) => {
-      socket.broadcast.to(user.room).emit("user disconnected", socket.id);
+      if (user) {
+        socket.broadcast.to(user.room).emit("user disconnected", socket.id);
 
-      // Busco la room y lo remuevo de la sala
-      Room.findOneAndUpdate(
-        { _id: new ObjectId(user.room) },
-        { $pull: { users: user._id } },
-        { new: true }
-      )
-        .then((data) => {
-          console.log("User removed from room");
-          // room quedo vacia
-          if (data && !data.users.length) {
-            // Borramos la room de la db
-            Room.deleteOne({ _id: data._id }).then(() =>
-              console.log("Room delete from DB")
+        // Busco la room y lo remuevo de la sala
+        Room.findOneAndUpdate(
+          { _id: new ObjectId(user.room) },
+          { $pull: { users: user._id } },
+          { new: true }
+        )
+          .then((data) => {
+            console.log("User removed from room");
+            // room quedo vacia
+            if (data && !data.users.length) {
+              // Borramos la room de la db
+              Room.deleteOne({ _id: data._id }).then(() =>
+                console.log("Room delete from DB")
+              );
+            }
+          })
+          .then(() => {
+            // Borramos el user de la db
+            User.deleteOne({ _id: socket.id }).then(() =>
+              console.log("User remove from DB")
             );
-          }
-        })
-        .then(() => {
-          // Borramos el user de la db
-          User.deleteOne({ _id: socket.id }).then(() =>
-            console.log("User remove from DB")
-          );
-        })
-        .catch((err) => console.log("Error: ", err));
+          })
+          .catch((err) => console.log("Error: ", err));
+      }
     });
   });
 }
