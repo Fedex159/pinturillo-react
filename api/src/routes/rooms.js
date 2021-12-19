@@ -8,8 +8,8 @@ const {
 } = require("../controllers/Rooms");
 
 router.get("/", getRooms);
+router.get("/", verifyRoom);
 router.get("/:id", getRoomById);
-router.get("/:id/:password", verifyRoom);
 
 router.post("/", createRoom);
 

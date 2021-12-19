@@ -3,6 +3,10 @@ const { Room } = require("../models/Room");
 
 async function getRooms(req, res, next) {
   try {
+    if (req.query.id) {
+      next();
+      return;
+    }
     const result = await Room.find({}, { password: false, __v: false });
     res.json(result);
   } catch (err) {
@@ -25,7 +29,7 @@ async function getRoomById(req, res, next) {
 async function createRoom(req, res, next) {
   try {
     const { title, password } = req.body;
-    if (title && password) {
+    if (title) {
       const response = await Room.create({ title, password, users: [] });
 
       res.json({ message: response._id });
@@ -39,7 +43,7 @@ async function createRoom(req, res, next) {
 
 async function verifyRoom(req, res, next) {
   try {
-    const { id, password } = req.params;
+    const { id, password } = req.query;
     const result = await Room.findOne({
       _id: new ObjectId(id),
       password: password,
