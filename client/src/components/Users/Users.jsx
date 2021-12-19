@@ -1,28 +1,29 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
 import { Navigate } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { getUsersRoom } from "../../utils";
 import s from "./Users.module.css";
 
 function Users({ socket, id }) {
+  const access = useSelector((state) => state.access);
   const [users, setUsers] = useState([]);
   const [redirect, setRedirect] = useState(false);
 
   useEffect(() => {
     if (socket) {
+      if (!access) {
+        socket.disconnect();
+        setRedirect(true);
+      }
       socket.on("connect", () => {
         socket.emit("room", id);
         socket.emit("user connected", socket.id, id);
-        axios
-          .get(`http://localhost:3001/rooms/${id}`)
-          .then((response) => response.data)
-          .then((data) => {
-            if (data) {
-              setUsers(data.users);
-              return;
-            }
-            socket.disconnect();
-            setRedirect(true);
-          });
+        getUsersRoom(id).then((data) => {
+          if (data) {
+            setUsers(data);
+            return;
+          }
+        });
       });
 
       socket.on("user connected", (userId) => {
@@ -39,7 +40,7 @@ function Users({ socket, id }) {
         });
       });
     }
-  }, [socket, id]);
+  }, [socket, id, access]);
 
   return (
     <div className={s.container}>
@@ -47,7 +48,7 @@ function Users({ socket, id }) {
       {users.map((user) => (
         <h2 key={user}>{user}</h2>
       ))}
-      {redirect ? <Navigate to="/" /> : null}
+      {redirect ? <Navigate to="/" replace={true} /> : null}
     </div>
   );
 }
