@@ -26,6 +26,18 @@ async function getRoomById(req, res, next) {
   }
 }
 
+async function getUsersFromRoom(req, res, next) {
+  try {
+    const { id } = req.params;
+
+    const result = await Room.findOne({ _id: new ObjectId(id) });
+
+    res.json(result ? result.users : null);
+  } catch (err) {
+    next(err);
+  }
+}
+
 async function createRoom(req, res, next) {
   try {
     const { title, password } = req.body;
@@ -55,4 +67,10 @@ async function verifyRoom(req, res, next) {
   }
 }
 
-module.exports = { getRooms, getRoomById, createRoom, verifyRoom };
+module.exports = {
+  getRooms,
+  getRoomById,
+  createRoom,
+  verifyRoom,
+  getUsersFromRoom,
+};
