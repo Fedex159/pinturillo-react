@@ -1,4 +1,6 @@
 import React, { useRef, useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import Header from "./Header/Header";
 import Palette from "./Palette/Palette";
 import s from "./Whiteboard.module.css";
 
@@ -26,6 +28,7 @@ function scaleCanvas(coordinates, userWidth, userHeight, ref) {
 }
 
 function Whiteboard({ socket, id }) {
+  const navigate = useNavigate();
   const [isDrawing, setIsDrawing] = useState(false);
   const [context, setContext] = useState(null);
   const [boundings, setBoundings] = useState(null);
@@ -107,7 +110,7 @@ function Whiteboard({ socket, id }) {
       setBoundings(bound);
 
       ref.current.width = ref.current.offsetWidth;
-      ref.current.height = ref.current.offsetHeight;
+      ref.current.height = ref.current.offsetParent.offsetHeight - 100;
 
       // Initial brush
       ctx.lineWidth = 10;
@@ -118,7 +121,7 @@ function Whiteboard({ socket, id }) {
         if (ref.current) {
           const bound = ref.current.getBoundingClientRect();
           ref.current.width = ref.current.offsetWidth;
-          ref.current.height = ref.current.offsetHeight;
+          ref.current.height = ref.current.offsetParent.offsetHeight - 100;
           ctx.lineWidth = 10;
           ctx.lineJoin = "round";
           ctx.lineCap = "round";
@@ -217,8 +220,20 @@ function Whiteboard({ socket, id }) {
     }
   };
 
+  const closeRoom = () => {
+    socket.disconnect();
+    navigate({ pathname: "/" }, { replace: true });
+  };
+
   return (
     <div className={s.container}>
+      <Header
+        counter={99}
+        room={id}
+        round={1}
+        word={"test"}
+        onClick={closeRoom}
+      />
       <Palette
         clearPage={clearPage}
         changeColor={changeColor}
