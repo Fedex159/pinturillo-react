@@ -2,30 +2,52 @@
   display: flex;
   flex-direction: column;
   padding: 10px;
-  background-color: rgb(255, 217, 0);
+  background-color: #121212;
   grid-area: chat;
+}
+
+.container h4 {
+  color: white;
+  font-size: 3rem;
+  margin: 0;
 }
 
 .container form {
   margin-top: auto;
+  margin-bottom: 10px;
 }
 
 .container input {
+  background-color: #e91e63;
+  border: none;
+  border-radius: 10px;
+  font-size: 1.4rem;
   width: 100%;
-  padding: 0;
+  height: 40px;
+  padding: 5px 15px;
+  color: white;
+}
+
+.container input:focus {
+  outline: 1px solid white;
+}
+
+.container input::placeholder {
+  color: white;
+  opacity: 0.5;
 }
 
 .container ul {
   padding: 0;
-  max-height: 90vh;
+  max-height: 80vh;
   overflow-y: auto;
   /* Firefox scroll */
-  scrollbar-width: none;
+  scrollbar-width: initial;
 }
 
 /* Chrome scroll */
 .container ul::-webkit-scrollbar {
-  display: none;
+  display: block;
 }
 
 .container li {
@@ -34,15 +56,19 @@
 }
 
 .container p {
+  color: white;
   margin: 0;
+  max-width: 100%;
+  overflow-wrap: break-word;
+  font-size: 1.4rem;
 }
 
 .myMessage {
-  color: blue;
+  color: #fa0356;
   font-weight: bold;
 }
 
 .userMessage {
-  color: green;
+  color: greenyellow;
   font-weight: bold;
 }
