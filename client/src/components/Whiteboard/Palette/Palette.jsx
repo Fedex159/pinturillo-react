@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import newPage from "../../../assets/imgs/newPage2.png";
 import s from "./Palette.module.css";
 
@@ -33,8 +33,11 @@ function NewPage({ clearPage }) {
 }
 
 function Colors({ changeColor }) {
+  const [selected, setSelected] = useState("#000000");
+
   const handleClick = (event) => {
     changeColor(event.target.id);
+    setSelected(event.target.id);
   };
 
   return (
@@ -43,7 +46,7 @@ function Colors({ changeColor }) {
         <div
           id={c}
           key={`${c}_${i}`}
-          className={s.color}
+          className={`${s.color} ${selected === c ? s.colorSelected : null}`}
           style={{ backgroundColor: c }}
           onClick={handleClick}
         ></div>
@@ -52,19 +55,32 @@ function Colors({ changeColor }) {
   );
 }
 
-function Brush({ size, changeBrush }) {
-  return (
-    <div className={s.brush} onClick={() => changeBrush(size)}>
-      <div className={s.circle} style={{ width: size, height: size }}></div>
-    </div>
-  );
-}
-
 function Brushes({ changeBrush }) {
+  const [selected, setSelected] = useState("10");
+
+  const handleClick = (event) => {
+    const value = event.target.id.split("brush_")[1];
+    console.log(event.target.id.split("brush_"));
+    changeBrush(value);
+    setSelected(value);
+  };
+
   return (
     <div className={s.brushes}>
-      {brushSizes.map((s, i) => (
-        <Brush key={`${i}_CircleSize`} size={s} changeBrush={changeBrush} />
+      {brushSizes.map((size, i) => (
+        <div
+          key={`${i}_CircleSize`}
+          className={`${s.brush} ${
+            selected === String(size) ? s.brushSelected : null
+          }`}
+        >
+          <div
+            id={"brush_" + size}
+            className={s.circle}
+            onClick={handleClick}
+            style={{ width: size, height: size }}
+          ></div>
+        </div>
       ))}
     </div>
   );
