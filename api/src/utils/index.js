@@ -109,8 +109,8 @@ function userDisconnected(socket) {
 }
 
 function chatMessages(socket) {
-  socket.on("message send", (userId, text, room) => {
-    socket.broadcast.to(room).emit("message incoming", userId, text);
+  socket.on("message send", (name, text, room, userId) => {
+    socket.broadcast.to(room).emit("message incoming", name, text, userId);
   });
 }
 
