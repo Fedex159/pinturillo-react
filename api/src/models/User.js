@@ -7,6 +7,13 @@ const UserSchema = new mongoose.Schema({
   room: {
     type: String,
   },
+  name: {
+    type: String,
+  },
+  points: {
+    type: Number,
+    default: 0,
+  },
 });
 
 const User = mongoose.model("User", UserSchema);
