@@ -40,25 +40,34 @@ function drawing(socket) {
 function userConnected(socket) {
   console.log("User connected: ", socket.id);
 
-  socket.on("room", (id) => {
-    User.create({ _id: socket.id, room: id })
-      .then(() => console.log("User added to DB"))
-      .catch((err) => console.log(err));
-
-    Room.findOneAndUpdate(
-      { _id: new ObjectId(id) },
-      { $push: { users: socket.id } },
-      { new: true }
-    )
-      .then(() => {
-        socket.join(id);
-        console.log("Join to room: ", id);
+  socket.on("room", (roomId, name) => {
+    User.create({ _id: socket.id, room: roomId, name: name })
+      .then((user) => {
+        console.log("User added to DB");
+        return user;
+      })
+      .then((user) => {
+        Room.findOneAndUpdate(
+          { _id: new ObjectId(roomId) },
+          { $push: { users: user } },
+          { new: true }
+        )
+          .then(() => {
+            socket.join(roomId);
+            console.log("Join to room: ", roomId);
+          })
+          .catch((err) => console.log(err));
       })
       .catch((err) => console.log(err));
   });
 
-  socket.on("user connected", (userId, room) => {
-    socket.broadcast.to(room).emit("user connected", userId);
+  socket.on("user connected", (userId, roomId, name) => {
+    socket.broadcast.to(roomId).emit("user connected", {
+      _id: userId,
+      room: roomId,
+      name: name,
+      points: 0,
+    });
   });
 }
 
@@ -74,7 +83,7 @@ function userDisconnected(socket) {
         // Busco la room y lo remuevo de la sala
         Room.findOneAndUpdate(
           { _id: new ObjectId(user.room) },
-          { $pull: { users: user._id } },
+          { $pull: { users: { _id: user._id } } },
           { new: true }
         )
           .then((data) => {
