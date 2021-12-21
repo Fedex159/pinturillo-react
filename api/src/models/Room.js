@@ -7,7 +7,7 @@ const RoomSchema = new mongoose.Schema({
   password: {
     type: String,
   },
-  users: [String],
+  users: [{ _id: String, room: String, name: String, points: Number }],
 });
 
 const Room = mongoose.model("Room", RoomSchema);
