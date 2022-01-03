@@ -135,6 +135,58 @@ function socket(server) {
 
     // user disconnect
     userDisconnected(socket);
+
+    socket.on("word", (word, room) => {
+      socket.broadcast.to(room).emit("word", word);
+    });
+
+    socket.on("counter", (counter, roomId) => {
+      socket.broadcast.to(roomId).emit("counter", counter);
+    });
+
+    socket.on("subscribe to turn", (roomId) => {
+      Room.findOne({ _id: new ObjectId(roomId) })
+        .then((data) => {
+          // turn no asignado
+          // unico usuario en la room
+          if (!data.turn && data.users.length === 1) {
+            data.turn = socket.id;
+            data.save();
+          }
+
+          if (!socket.myTimer) {
+            socket.myTimer = setInterval(() => {
+              console.log("Emitiendo...");
+              socketIO.to(roomId).emit("subscribe to turn", data.turn);
+            }, 1000);
+          }
+        })
+        .catch((err) => console.log(err));
+    });
+
+    socket.on("turn end", (room) => {
+      Room.findOne({ _id: new ObjectId(room) }).then((data) => {
+        data.turn = data.users[1]._id;
+        data.save().then(() => {
+          console.log("New turn!!!");
+          socket.emit("subscribe to turn", data.turn);
+        });
+      });
+    });
+
+    socket.on("unsubscribed to turn", () => {
+      clearInterval(socket.myTimer);
+      delete socket.myTimer;
+      console.log("Unsubscribed to turn!!!");
+    });
+
+    socket.on("disconnect", () => {
+      if (socket.myTimer) {
+        clearInterval(socket.myTimer);
+        delete socket.myTimer;
+        console.log("Socket timer delete!!!");
+      }
+    });
   });
 }
 
