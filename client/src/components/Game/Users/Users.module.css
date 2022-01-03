@@ -1,0 +1,14 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  background-color: #121212;
+  grid-area: users;
+  padding: 20px;
+}
+
+.container h4 {
+  color: white;
+  font-size: 3rem;
+  margin: 0;
+}

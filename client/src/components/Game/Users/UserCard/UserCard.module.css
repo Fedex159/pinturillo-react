@@ -1,4 +1,4 @@
-.cardUser {
+.container {
   display: flex;
   align-items: center;
   gap: 30px;
@@ -9,37 +9,22 @@
   border-radius: 5px;
 }
 
-.cardUser img {
+.container img {
   width: 40px;
   height: 60px;
   margin-left: auto;
 }
 
-.cardUser span {
+.container span {
   font-size: 3rem;
   margin-left: 10px;
 }
 
-.userInfo {
+.info {
   text-align: start;
 }
 
-.userInfo h2 {
+.info h2 {
   margin: 0;
   text-transform: capitalize;
-}
-
-.container {
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-  background-color: #121212;
-  grid-area: users;
-  padding: 20px;
-}
-
-.container h4 {
-  color: white;
-  font-size: 3rem;
-  margin: 0;
 }

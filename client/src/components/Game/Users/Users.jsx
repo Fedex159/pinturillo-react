@@ -1,23 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { Navigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
-import { getUsersRoom } from "../../utils";
-import { setTurn } from "../../state/actions";
-import pencil from "../../assets/imgs/pencil.png";
+import { getUsersRoom } from "../../../utils/index";
+import { setTurn } from "../../../state/actions/index";
+import UserCard from "./UserCard/UserCard";
 import s from "./Users.module.css";
-
-function UserCard({ index, name, points }) {
-  return (
-    <div className={s.cardUser}>
-      <span>{index + 1}</span>
-      <div className={s.userInfo}>
-        <h2>{points}</h2>
-        <h2>{name}</h2>
-      </div>
-      <img src={pencil} alt="pencil" />
-    </div>
-  );
-}
 
 function Users({ socket, id }) {
   const dispatch = useDispatch();

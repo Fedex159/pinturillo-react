@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import newPage from "../../../assets/imgs/newPage2.png";
+import newPage from "../../../../assets/imgs/newPage2.png";
 import s from "./Palette.module.css";
 
 const colors = [

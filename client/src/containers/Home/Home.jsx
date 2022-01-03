@@ -1,8 +1,8 @@
 import React, { useState } from "react";
-import NavBar from "./NavBar/NavBar";
-import Name from "./Name/Name";
-import CreateRoom from "./CreateRoom/CreateRoom";
-import JoinRoom from "./JoinRoom/JoinRoom";
+import NavBar from "../../components/Home/NavBar/NavBar";
+import Name from "../../components/Home/Name/Name";
+import CreateRoom from "../../components/Home/CreateRoom/CreateRoom";
+import JoinRoom from "../../components/Home/JoinRoom/JoinRoom";
 import s from "./Home.module.css";
 
 const options = {

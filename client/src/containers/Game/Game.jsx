@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
-import Users from "../Users/Users";
-import Whiteboard from "../Whiteboard/Whiteboard";
-import Chat from "../Chat/Chat";
+import Users from "../../components/Game/Users/Users";
+import Whiteboard from "../../components/Game/Whiteboard/Whiteboard";
+import Chat from "../../components/Game/Chat/Chat";
 import { useParams } from "react-router-dom";
 import s from "./Game.module.css";
 import { io } from "socket.io-client";

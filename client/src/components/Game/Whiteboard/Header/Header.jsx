@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
-import { getWords } from "../../../utils";
+import { getWords } from "../../../../utils";
 import s from "./Header.module.css";
 
 function Words({ socket, room, setWord, handleStart }) {
