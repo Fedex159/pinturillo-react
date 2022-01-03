@@ -1,3 +1,30 @@
+.words {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  margin-top: 5px;
+}
+
+.word {
+  background-color: white;
+  padding: 0 5px 0 5px;
+  border: 5px solid black;
+}
+
+.word h3 {
+  margin: 0;
+  text-transform: uppercase;
+  font-weight: bold;
+  font-size: 2rem;
+}
+
+.word:hover {
+  cursor: pointer;
+  background-color: black;
+  color: white;
+}
+
 .container {
   display: flex;
   align-items: center;
@@ -32,6 +59,7 @@
   background: radial-gradient(white, rgb(175, 175, 175));
   border: 5px solid black;
   border-radius: 50%;
+  padding: 5px;
 }
 
 .counter span {
@@ -44,13 +72,25 @@
   padding: 10px;
 }
 
-.data h3 {
+.dataWord {
   margin: 0;
   margin-top: 5px;
   text-transform: uppercase;
   font-weight: bold;
   font-size: 2rem;
 }
+
+.dataWordSpace {
+  letter-spacing: 10px;
+  font-stretch: narrower;
+}
+/* .data h3 {
+  margin: 0;
+  margin-top: 5px;
+  text-transform: uppercase;
+  font-weight: bold;
+  font-size: 2rem;
+} */
 
 .info {
   display: flex;
