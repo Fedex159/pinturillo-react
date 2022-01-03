@@ -14,3 +14,8 @@ export const getUsersRoom = async (id) => {
   const response = await axios.get(`/rooms/users/${id}`);
   return response.data;
 };
+
+export const getWords = async () => {
+  const response = await axios.get("/words");
+  return response.data;
+};
