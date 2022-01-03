@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { Navigate } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { getUsersRoom } from "../../utils";
+import { setTurn } from "../../state/actions";
 import pencil from "../../assets/imgs/pencil.png";
 import s from "./Users.module.css";
 
@@ -19,6 +20,7 @@ function UserCard({ index, name, points }) {
 }
 
 function Users({ socket, id }) {
+  const dispatch = useDispatch();
   const access = useSelector((state) => state.access);
   const name = useSelector((state) => state.name);
   const [users, setUsers] = useState([]);
@@ -30,6 +32,8 @@ function Users({ socket, id }) {
       getUsersRoom(id)
         .then((data) => {
           if (data) {
+            // Falla, buscar alternativa
+            console.log("getUsers", data);
             setUsers(data);
           }
         })
@@ -47,6 +51,12 @@ function Users({ socket, id }) {
         socket.emit("room", id, name);
         socket.emit("user connected", socket.id, id, name);
         setConnected(true);
+        socket.emit("subscribe to turn", id);
+      });
+
+      socket.on("subscribe to turn", (turn) => {
+        dispatch(setTurn(turn));
+        socket.emit("unsubscribed to turn");
       });
 
       socket.on("user connected", (user) => {
@@ -59,7 +69,7 @@ function Users({ socket, id }) {
         });
       });
     }
-  }, [socket, id, access, name]);
+  }, [socket, id, access, name, dispatch]);
 
   return (
     <div className={s.container}>
