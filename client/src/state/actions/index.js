@@ -13,3 +13,10 @@ export const setAccess = (value) => {
     payload: value,
   };
 };
+
+export const setTurn = (turn) => {
+  return {
+    type: types.SET_TURN,
+    payload: turn,
+  };
+};

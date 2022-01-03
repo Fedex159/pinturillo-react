@@ -3,6 +3,7 @@ import { types } from "../actions/types";
 const initialState = {
   name: "",
   access: false,
+  turn: "",
 };
 
 const rootReducer = (state = initialState, action) => {
@@ -18,6 +19,13 @@ const rootReducer = (state = initialState, action) => {
       return {
         ...state,
         access: action.payload,
+      };
+    }
+
+    case types.SET_TURN: {
+      return {
+        ...state,
+        turn: action.payload,
       };
     }
 
