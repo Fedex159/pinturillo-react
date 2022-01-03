@@ -1,5 +1,6 @@
 import React, { useRef, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
 import Header from "./Header/Header";
 import Palette from "./Palette/Palette";
 import s from "./Whiteboard.module.css";
@@ -29,6 +30,7 @@ function scaleCanvas(coordinates, userWidth, userHeight, ref) {
 
 function Whiteboard({ socket, id }) {
   const navigate = useNavigate();
+  const turn = useSelector((state) => state.turn);
   const [isDrawing, setIsDrawing] = useState(false);
   const [context, setContext] = useState(null);
   const [boundings, setBoundings] = useState(null);
@@ -228,23 +230,25 @@ function Whiteboard({ socket, id }) {
   return (
     <div className={s.container}>
       <Header
-        counter={99}
+        socket={socket}
         room={id}
         round={1}
         word={"test"}
         onClick={closeRoom}
       />
-      <Palette
-        clearPage={clearPage}
-        changeColor={changeColor}
-        changeBrush={changeBrush}
-      />
+      {socket && socket.id === turn ? (
+        <Palette
+          clearPage={clearPage}
+          changeColor={changeColor}
+          changeBrush={changeBrush}
+        />
+      ) : null}
       <canvas
         ref={ref}
-        onMouseDown={handleDown}
-        onMouseMove={handleMove}
-        onMouseUp={handleUp}
-        onClick={handleClick}
+        onMouseDown={socket && socket.id === turn ? handleDown : null}
+        onMouseMove={socket && socket.id === turn ? handleMove : null}
+        onMouseUp={socket && socket.id === turn ? handleUp : null}
+        onClick={socket && socket.id === turn ? handleClick : null}
       ></canvas>
     </div>
   );
