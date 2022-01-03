@@ -60,7 +60,6 @@ function Brushes({ changeBrush }) {
 
   const handleClick = (event) => {
     const value = event.target.id.split("brush_")[1];
-    console.log(event.target.id.split("brush_"));
     changeBrush(value);
     setSelected(value);
   };
